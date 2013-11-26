@@ -1,0 +1,13 @@
+{
+    "sampleData" : {},
+    "displayName" : "Activity for an SFDC Cases",
+    "name" : "case_activity",
+    "description" : "Case activity.",
+    "config" : "/sfdccase/configure",
+    "style" : "ACTIVITY",
+    "icons" : {
+        "16": "{{{host}}}/case_activity/images/salesforce.png",
+        "48": "{{{host}}}/case_activity/images/salesforce.png",
+        "128": "{{{host}}}/case_activity/images/salesforce.png"
+    }
+}

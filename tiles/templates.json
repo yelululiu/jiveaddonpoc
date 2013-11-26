@@ -1,0 +1,10 @@
+{
+    "default": {
+        "name": "defaultTemplate",
+        "displayName": "Contains: [JiveAddonPocTile] ",
+        "description": "Extension UUID 775f8167-a36c-4af4-b66d-3de407218d3f Contains: [JiveAddonPocTile] ",
+        "tiles": [
+            "JiveAddonPocTile"
+        ]
+    }
+}
