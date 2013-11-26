@@ -49,7 +49,7 @@ var processTileInstance = function(instance) {
  */
 var pushData = function() {
     var deferred = q.defer();
-    jive.tiles.findByDefinitionName('MyFirstTile').then(function(instances) {
+    jive.tiles.findByDefinitionName('JiveAddonPocTile').then(function(instances) {
         if (instances) {
             q.all(instances.map(processTileInstance)).then(function() {
                 deferred.resolve(); //success

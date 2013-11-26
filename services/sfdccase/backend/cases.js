@@ -20,20 +20,27 @@ var metadataStore = jive.service.persistence();
 exports.pullActivity = function(extstreamInstance) {
 
     return exports.getLastTimePulled(extstreamInstance, 'activity').then(function (lastTimePulled) {
-        var ticketID = extstreamInstance.config.ticketID;
-
-        //First query text posts
-        var queryTextPosts = util.format("SELECT Id, Type, CreatedDate, CreatedBy.Name, Parent.Name, IsDeleted, Body, (SELECT Id, FieldName, OldValue, NewValue" +
-            " FROM FeedTrackedChanges ) FROM OpportunityFeed" +
-            " WHERE ParentId = '%s' AND CreatedDate > %s ORDER BY CreatedDate ASC",
-            opportunityID,
-            getDateString(lastTimePulled));
-        var uri1 = util.format("/query?q=%s", encodeURIComponent(queryTextPosts));
-
-        return sfdc_helpers.querySalesforceV27(ticketID, uri1).then(function (response) {
-            var entity = response['entity'];
-            return convertToActivities(entity, lastTimePulled, extstreamInstance);
-        });
+        // var ticketID = extstreamInstance.config.ticketID;
+// 
+        // //First query text posts
+        // var queryTextPosts = util.format("SELECT Id, Type, CreatedDate, CreatedBy.Name, Parent.Name, IsDeleted, Body, (SELECT Id, FieldName, OldValue, NewValue" +
+            // " FROM FeedTrackedChanges ) FROM OpportunityFeed" +
+            // " WHERE ParentId = '%s' AND CreatedDate > %s ORDER BY CreatedDate ASC",
+            // opportunityID,
+            // getDateString(lastTimePulled));
+        // var uri1 = util.format("/query?q=%s", encodeURIComponent(queryTextPosts));
+// 
+        // return sfdc_helpers.querySalesforceV27(ticketID, uri1).then(function (response) {
+            // var entity = response['entity'];
+            // return convertToActivities(entity, lastTimePulled, extstreamInstance);
+        // });
+        var entity = {
+          'CreatedBy.Name': 'louie',
+          'Subject': 'Seeking guidance on electrical wiring installation for GC5060',
+          'Description': 'This is description',
+          'CreatedDate': '2013-11-22T03:35:58.000+0000'
+        }
+        return convertToActivities(entity, lastTimePulled, extstreamInstance);
 
     }).catch(function (err) {
         jive.logger.error('Error querying salesforce', err);
@@ -60,22 +67,22 @@ function convertToActivities(entity, lastTimePulled, instance) {
 
 function getActivityJSON(record) {
     var actor = record.CreatedBy && record.CreatedBy.Name || 'Anonymous';
-    var oppName = record.Parent && record.Parent.Name || 'Some Opportunity';
+    var oppName = record.Subject || 'Some Subject';
     var externalID = record.Id;
     var createdDate = new Date(record.CreatedDate).getTime();
 
-    var body = null;
-    if (record.Type == 'TextPost') {
-        body = record.Body;
-    }
-    else if (record.Type == 'TrackedChange') {
-        var changes = record.FeedTrackedChanges && record.FeedTrackedChanges.records;
-        if (changes && changes.length > 0) {
-            var lastChange = changes[changes.length - 1];
-            body = actor + ' changed ' + lastChange.FieldName.replace('Opportunity\.', '') + ' from '
-                + lastChange.OldValue + ' to ' + lastChange.NewValue + '.';
-        }
-    }
+    var body = record.Description;
+    // if (record.Type == 'TextPost') {
+        // body = record.Body;
+    // }
+    // else if (record.Type == 'TrackedChange') {
+        // var changes = record.FeedTrackedChanges && record.FeedTrackedChanges.records;
+        // if (changes && changes.length > 0) {
+            // var lastChange = changes[changes.length - 1];
+            // body = actor + ' changed ' + lastChange.FieldName.replace('Opportunity\.', '') + ' from '
+                // + lastChange.OldValue + ' to ' + lastChange.NewValue + '.';
+        // }
+    // }
 
     body = body || 'Empty post';
 
@@ -120,3 +127,21 @@ function wasSynced(instance, sfCommentID) {
         return metadata && metadata.syncs && metadata.syncs.indexOf(sfCommentID) >= 0;
     });
 }
+
+/**
+ * Returns the timestamp of the last time the tile instance was pulled, for a particular pull type (eg. comment, activity)
+ * from SFDC, allowing us to avoid unnecessarily query SFDC for records spanning all time.
+ * @param instance
+ * @param type
+ * @return long timestamp
+ */
+exports.getLastTimePulled = function(instance, type) {
+    return getMetadataByInstance(instance).then(function (metadata) {
+        var lastTimePulled = metadata && metadata.lastTimePulled && metadata.lastTimePulled[type];
+        if (!lastTimePulled) {
+            lastTimePulled = 1; //start date as 1 ms after the epoch, so that instance pulls all existing data for an opportunity
+            return exports.updateLastTimePulled(instance, lastTimePulled, type).thenResolve(lastTimePulled);
+        }
+        return lastTimePulled;
+    });
+};

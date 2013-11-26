@@ -22,5 +22,5 @@ exports.task = new jive.tasks.build(
     },
 
     // interval (optional)
-    10000
+    100000
 );

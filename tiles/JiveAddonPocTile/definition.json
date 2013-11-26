@@ -9,7 +9,7 @@
         ],
             "action" : {
                 "text" : "Jive addon table: action",
-                "url" : "http://jiveaddonpoc.ap01.aws.af.cm/MyFirstTile/action"
+                "url" : "http://jiveaddonpoc.ap01.aws.af.cm/JiveAddonPocTile/action"
             }},
     "displayName" : "Jive addon table",
     "name" : "Jive addon table",
@@ -20,5 +20,5 @@
         "48": "https://community.jivesoftware.com/servlet/JiveServlet/showImage/102-99994-1-1023036/j.png",
         "128": "https://community.jivesoftware.com/servlet/JiveServlet/showImage/102-99994-1-1023036/j.png"
     },
-    "action": "/MyFirstTile/action"
+    "action": "/JiveAddonPocTile/action"
 }
