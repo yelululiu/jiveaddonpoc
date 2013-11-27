@@ -23,7 +23,7 @@ function doIt( host ) {
         var query = encodeURIComponent("SELECT Id, Name, Description, StageName, Amount FROM Opportunity");
 
         osapi.http.get({
-            'href' : host + '/sfdc/salesforce/query?' +
+            'href' : host + '/sfdccase/salesforce/query?' +
                 'id=' + ticketID +
                 "&ts=" + new Date().getTime() +
                 "&ticketID=" + ticketID +
